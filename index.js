@@ -51,10 +51,25 @@ function insertMetaNode(tag) {
   }
 }
 
+function insertJSONLDtag(tag) {
+  let properties = ['"@context": "http://schema.org"']
+  tag.content.forEach(function(property) {
+    properties.push('"' + property.key + '": "' + property.value + '"')
+
+  })
+  var newNode = document.createElement('script');
+  newNode.setAttribute('type', 'application/ld+json');
+  newNode.text = '\n{\n  ' + properties.join(',\n  ') + '\n}\n'
+  document.getElementsByTagName('head')[0].appendChild(newNode);
+}
+
 function insertMetaNodes(tags) {
   if (typeof document !== 'undefined' && tags) {
     Array.prototype.slice.call(tags).forEach(function (tag) {
-      insertMetaNode(tag);
+      if (tag.type === 'jsonld') {
+        insertJSONLDtag(tag)
+      }
+      else insertMetaNode(tag);
     });
   }
 }
